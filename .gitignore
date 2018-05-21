@@ -25,4 +25,5 @@ site
 .cache
 *.eggs
 *.log
+.pytest_cache
 venv
