@@ -1,7 +1,7 @@
 import unittest
 from queue import Queue
 
-from bears.python.PyFlakesASTBear import PyFlakesASTBear
+from pyflakesbears.PyFlakesASTBear import PyFlakesASTBear
 from coalib.testing.LocalBearTestHelper import execute_bear
 from coalib.settings.Section import Section
 from pyflakes.checker import ClassScope, FunctionScope, ModuleScope
