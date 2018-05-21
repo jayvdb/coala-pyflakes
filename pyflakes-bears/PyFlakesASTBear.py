@@ -15,10 +15,10 @@ class PyFlakesResult(HiddenResult):
         Result.__init__(self, origin, message='')
 
         self.module_scope = self.get_scopes(ModuleScope, deadScopes)[0]
-        self.class_scope = self.get_scopes(ClassScope, deadScopes)
-        self.function_scope = self.get_scopes(FunctionScope, deadScopes)
-        self.generator_scope = self.get_scopes(GeneratorScope, deadScopes)
-        self.doctest_scope = self.get_scopes(DoctestScope, deadScopes)
+        self.class_scopes = self.get_scopes(ClassScope, deadScopes)
+        self.function_scopes = self.get_scopes(FunctionScope, deadScopes)
+        self.generator_scopes = self.get_scopes(GeneratorScope, deadScopes)
+        self.doctest_scopes = self.get_scopes(DoctestScope, deadScopes)
         self.pyflakes_messages = pyflakes_messages
 
     def get_scopes(self, scope_type, scopes):
@@ -46,6 +46,6 @@ class PyFlakesASTBear(LocalBear):
             from the file.
         """
         tree = ast.parse(''.join(file))
-        result = Checker(tree, filename)
+        result = Checker(tree, filename=filename, withDoctest=True)
 
         yield PyFlakesResult(self, result.deadScopes, result.messages)
