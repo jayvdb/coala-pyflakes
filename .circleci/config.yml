@@ -1,0 +1,41 @@
+version: 2
+jobs:
+  python-3.4:
+    docker:
+      - image: circleci/python:3.4
+
+    steps: &build
+      - checkout
+      - restore_cache:
+          key: coala-pyflakes-cache-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: dependencies
+          command: |
+            pip install --user \
+            -r requirements.txt \
+            -r bear-requirements.txt \
+            -r test-requirements.txt
+
+      - run:
+          name: pytest
+          when: always
+          command: python -m pytest
+
+      - save_cache:
+          key: coala-cache-{{ checksum "requirements.txt" }}
+          paths:
+            - "../.cache/pip"
+
+  python-3.5:
+    docker:
+      - image: circleci/python:3.5
+
+    steps: *build
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - python-3.4
+      - python-3.5
