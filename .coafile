@@ -1,5 +1,5 @@
 [all]
-files = pyflakesbears/**/*.py, tests/**/*.py
+files = pyflakes_bears/**/*.py, tests/**/*.py
 
 max_line_length = 79
 use_spaces = True
