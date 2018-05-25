@@ -1,6 +1,6 @@
 from coalib.bears.LocalBear import LocalBear
 from coalib.results.Result import Result
-from pyflakesbears.PyFlakesASTBear import PyFlakesASTBear
+from pyflakes_bears.PyFlakesASTBear import PyFlakesASTBear
 from pyflakes.checker import FutureImportation
 
 

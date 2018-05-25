@@ -1,6 +1,6 @@
 from queue import Queue
 
-from pyflakesbears.NoFutureImportBear import NoFutureImportBear
+from pyflakes_bears.NoFutureImportBear import NoFutureImportBear
 from coalib.testing.LocalBearTestHelper import LocalBearTestHelper
 from coalib.settings.Section import Section
 
