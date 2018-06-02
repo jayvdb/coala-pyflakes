@@ -27,3 +27,4 @@ site
 *.log
 .pytest_cache
 venv
+.moban.hashes

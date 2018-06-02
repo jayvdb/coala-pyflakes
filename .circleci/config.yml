@@ -6,6 +6,7 @@ jobs:
 
     steps: &build
       - checkout
+
       - restore_cache:
           key: coala-pyflakes-cache-{{ checksum "requirements.txt" }}
 
@@ -16,40 +17,41 @@ jobs:
             echo "export PATH=~/.local/bin:$PATH" >> $BASH_ENV
 
       - run:
-          name: install-csslint
-          command: |
-            curl -o- \
-            https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh\
-            | bash
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm install 8
-            npm install -g csslint
-
-      - run:
           name: dependencies
           command: |
             sudo pip install \
             -r requirements.txt \
-            -r bear-requirements.txt \
             -r test-requirements.txt
-
-      - run:
-          name: pytest
-          when: always
-          command: python -m pytest
 
       - run:
           name: install-shellcheck
           command: sudo apt-get install shellcheck
 
       - run:
-          name: coala-ci
+          name: moban-dependencies
+          command: |
+            git clone https://github.com/moremoban/setupmobans ../setupmobans
+            git clone https://gitlab.com/coala/mobans ../coala-mobans
+
+      - run:
+          name: moban-check
           when: always
           command: |
-            coala --non-interactive
+            moban
+            git diff --exit-code
+
+      - run:
+          name: coala-ci
+          when: always
+          command: coala --non-interactive
+
+      - run:
+          name: pytest
+          when: always
+          command: python -m pytest
 
       - save_cache:
-          key: coala-cache-{{ checksum "requirements.txt" }}
+          key: coala-pyflakes-cache-{{ checksum "requirements.txt" }}
           paths:
             - "../.cache/pip"
 
