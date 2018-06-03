@@ -1,5 +1,6 @@
 [all]
-files = pyflakes_bears/**/*.py, tests/**/*.py
+files = pyflakes_bears/**/*.py, tests/**/*.py,
+        pyflakes_generic_plugins/**/*.py
 
 max_line_length = 79
 use_spaces = True
