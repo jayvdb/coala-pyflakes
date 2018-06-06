@@ -12,6 +12,7 @@ build_version: 0.1
 package_module: pyflakes_bears
 docs_output_dir: docs
 ci_directory: .circleci
+docs_toc: false
 
 dependencies:
   - coala==0.12.0.dev20180101025653
@@ -27,9 +28,18 @@ configuration:
     - .moban.dt/
     - ../coala-mobans/templates/
     - ../coala-mobans/assets/
-    - ../setupmobans/templates/
   configuration: .moban.yaml
   configuration_dir: ../coala-mobans/
+
+copy:
+  - docs-requirements.txt: docs/docs-requirements.txt
+  - docs/_static/images/coala_logo.svg: docs/images/coala_logo.svg
+  - docs/_static/images/coala-header.png: docs/images/coala-header.png
+  - docs/.gitignore: docs/.gitignore
+  - docs/Makefile: docs/Makefile
+  - docs/make.bat: docs/make.bat
+  - docs/_static/custom.css: docs/custom.css
+  - .circleci/run_with_env.cmd: run_with_env.cmd
 
 targets:
   - setup.py: coala-setup.py.jj2
@@ -37,4 +47,3 @@ targets:
   - requirements.txt: requirements.txt.jj2
   - test-requirements.txt: test-requirements.txt.jj2
   - .circleci/appveyor.yml: ci/appveyor.yml.jj2
-  - .circleci/run_with_env.cmd: run_with_env.cmd
