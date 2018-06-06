@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
 
+{%if package_module == 'coalib' %}
+import datetime
+{%endif%}
 import locale
 import os
 import platform
 import sys
+{%if package_module == 'coalib' %}
+from os import getenv
+{%endif%}
+{% if docs_output_dir %}
 from subprocess import call
+{% endif %}
 
 import setuptools.command.build_py
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
+{%if package_module == 'coalib' %}
+from coalib import assert_supported_version, get_version
+from coalib.misc.BuildManPage import BuildManPage
+
+{%endif%}
 try:
     lc = locale.getlocale()
     pf = platform.system()
@@ -18,10 +31,14 @@ try:
 except (ValueError, UnicodeError, locale.Error):
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
-VERSION = '0.1'
+VERSION = '{{build_version}}'
 
+{% block additional_setup_commands %}
 SETUP_COMMANDS = {}
+{% endblock %}
 
+{%block local_exec_block_1%}
+{%endblock%}
 
 def set_python_path(path):
     if 'PYTHONPATH' in os.environ:
@@ -56,28 +73,28 @@ class PyTestCommand(TestCommand):
 
 SETUP_COMMANDS['test'] = PyTestCommand
 
+{% if docs_output_dir %}
 
 class BuildDocsCommand(setuptools.command.build_py.build_py):
 
     def initialize_options(self):
         setup_dir = os.path.join(os.getcwd(), __dir__)
         docs_dir = os.path.join(setup_dir, 'docs')
-        source_docs_dir = os.path.join(setup_dir, 'docs')
+        source_docs_dir = os.path.join(setup_dir, '{{docs_output_dir}}')
 
         set_python_path(setup_dir)
 
         self.apidoc_commands = list()
 
+        {% for package in packages: %}
         self.apidoc_commands.append((
             'sphinx-apidoc', '-f', '-o', source_docs_dir,
+        {%if not docs_toc %}
             '--no-toc',
-            os.path.join(setup_dir, 'pyflakes_bears')
+        {%endif%}
+            os.path.join(setup_dir, '{{package}}')
         ))
-        self.apidoc_commands.append((
-            'sphinx-apidoc', '-f', '-o', source_docs_dir,
-            '--no-toc',
-            os.path.join(setup_dir, 'pyflakes_generic_plugins')
-        ))
+        {% endfor %}
 
         self.make_command = (
             'make', '-C',
@@ -100,11 +117,17 @@ class BuildDocsCommand(setuptools.command.build_py.build_py):
 
 
 SETUP_COMMANDS['docs'] = BuildDocsCommand
+{% endif %}
+{%block local_exec_block_2%}
+{%endblock%}
 
 __dir__ = os.path.dirname(__file__)
 filename = os.path.join(__dir__, 'requirements.txt')
 with open(filename) as requirements:
     required = requirements.read().splitlines()
+{%if package_module == 'bears' %}
+    required.remove('-r bear-requirements.txt')
+{%endif%}
 
 filename = os.path.join(__dir__, 'test-requirements.txt')
 with open(filename) as requirements:
@@ -117,44 +140,99 @@ with open(filename) as readme:
 extras_require = None
 EXTRAS_REQUIRE = {}
 data_files = None
+{%block custom_requirements%}
+{%endblock%}
 
 if extras_require:
     EXTRAS_REQUIRE = extras_require
 SETUP_COMMANDS.update({
+{% block custom_setup_commands %}
+{% endblock %}
 })
 
 if __name__ == '__main__':
-    setup(name='coala-pyflakes',
+{% block setup_call %}
+    setup(name='{{name}}',
           version=VERSION,
-          description='A collection of bears implemented using pyflakes-enhanced-AST',
-          author='Ankit Joshi',
-          author_email='ajankit2304@gmail.com',
-          maintainer='Lasse Schuirmann, Fabian Neuschmidt, Mischa Kr\xfcger',
-          maintainer_email=('lasse.schuirmann@gmail.com, '
-                            'fabian@neuschmidt.de, '
-                            'makman@alice.de'),
-          url='https://github.com/macbox7/coala-pyflakes',
+          description='{{description}}',
+          author='{{author}}',
+          author_email='{{contact}}',
+          maintainer={% if not maintainers %}
+{% for maintainer in maintainer_list: %}
+{%- if not loop.first %}                     {%endif%}
+'{{- maintainer }}{% if not loop.last %}, {%endif%}'{%
+if (not rtd_maintainer) and loop.last %},{%endif%}
+{% if not loop.last %}
+
+{% endif %}
+{% endfor -%}
+{% else %}
+'{{ maintainers |join(', ') }}'{%endif%}
+{% if rtd_maintainer %}
+
+                     if not on_rtd else '{{rtd_maintainer}}',{%
+elif not maintainer_list %},{%endif%}
+
+          maintainer_email=({% for email in maintainer_emails: %}
+{%- if not loop.first %}                            {%endif%}
+'{{- email }}{% if not loop.last %}, {%endif%}'{% if loop.last %}),{%endif%}
+
+{%endfor%}
+          url='{{url}}',
           platforms='any',
           packages=find_packages(exclude=('build.*', 'tests', 'tests.*')),
           install_requires=required,
           extras_require=EXTRAS_REQUIRE,
           tests_require=test_required,
-          package_data={'pyflakes_bears': ['VERSION']},
-          license='MIT',
+{%if package_module == 'coalib' %}
+          package_data={'coalib': ['system_coafile', 'VERSION',
+                                   'bearlib/languages/documentation/*.coalang']
+                        },
+{%elif package_module == 'bears' %}
+          package_data={'bears': ['VERSION'],
+                        'bears.java': ['checkstyle.jar', 'google_checks.xml'],
+                        'bears.scala': ['scalastyle.jar',
+                                        'scalastyle_config.xml']},
+{% else %}
+          package_data={'{{ package_module }}': ['VERSION']},
+{%endif%}
+          license='{{ license }}',
           data_files=data_files,
           long_description=long_description,
+{%if entry_points %}
+          entry_points={
+  {% for group_name, items in entry_points.items(): %}
+              '{{group_name}}': [
+    {% for item in items: %}
+                  '{{item}}',
+    {% endfor %}
+              ],
+  {% endfor %}
+          },
+{%endif%}
           # from http://pypi.python.org/pypi?%3Aaction=list_classifiers
           classifiers=[
               'Development Status :: 4 - Beta',
 
+{% if package_module == 'bears' %}
+              'Environment :: Plugins',
+{% else %}
               'Environment :: Console',
+{% endif %}
               'Environment :: MacOS X',
               'Environment :: Win32 (MS Windows)',
 
               'Intended Audience :: Science/Research',
               'Intended Audience :: Developers',
 
+{% if license == 'AGPL-3.0' %}
+              'License :: OSI Approved :: GNU Affero General Public License '
+              'v3 or later (AGPLv3+)',
+{% elif license == 'GPL v3' %}
+              'License :: OSI Approved :: General Public License v3 (GPLv3)'
+{% elif license == 'MIT' %}
               'License :: OSI Approved :: MIT License'
+{% endif %}
 
               'Operating System :: OS Independent',
 
@@ -169,3 +247,4 @@ if __name__ == '__main__':
               'Topic :: Text Processing :: Linguistic'],
           cmdclass=SETUP_COMMANDS,
           )
+{% endblock %}

@@ -10,7 +10,7 @@ version: 0.1
 release: 0.1
 build_version: 0.1
 package_module: pyflakes_bears
-docs_output_dir: false
+docs_output_dir: docs
 ci_directory: .circleci
 
 dependencies:
@@ -18,17 +18,21 @@ dependencies:
   - coala-bears==0.12.0.dev20171110210444
   - pyflakes~=1.5.0
 
+packages:
+  - pyflakes_bears
+  - pyflakes_generic_plugins
+
 configuration:
   template_dir:
-    - .moban.dt/
     - ../coala-mobans/templates/
     - ../coala-mobans/assets/
     - ../setupmobans/templates/
+    - .moban.dt/
   configuration: .moban.yaml
   configuration_dir: ../coala-mobans/
 
 targets:
-  - setup.py: coala-setup.py.jj2
+  - setup.py: coala-multi-setup.py.jj2
   - pyflakes_bears/VERSION: VERSION.jj2
   - requirements.txt: requirements.txt.jj2
   - test-requirements.txt: test-requirements.txt.jj2
