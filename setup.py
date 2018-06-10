@@ -22,6 +22,15 @@ VERSION = '0.1'
 SETUP_COMMANDS = {}
 
 
+def set_python_path(path):
+    if 'PYTHONPATH' in os.environ:
+        user_paths = os.environ['PYTHONPATH'].split(os.pathsep)
+        user_paths.insert(0, path)
+        os.environ['PYTHONPATH'] = os.pathsep.join(user_paths)
+    else:
+        os.environ['PYTHONPATH'] = path
+
+
 class PyTestCommand(TestCommand):
     """
     From https://pytest.org/latest/goodpractices.html
@@ -114,4 +123,4 @@ if __name__ == '__main__':
               'Topic :: Software Development :: Quality Assurance',
               'Topic :: Text Processing :: Linguistic'],
           cmdclass=SETUP_COMMANDS,
-     )
+          )
