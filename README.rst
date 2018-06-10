@@ -1,1 +1,3 @@
 # coala-pyflakes
+
+foo
