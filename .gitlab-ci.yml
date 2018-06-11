@@ -1,0 +1,25 @@
+image: python:3.6
+
+variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
+
+cache:
+  paths:
+    - .cache/
+    - venv/
+
+before_script:
+  - python -V
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
+  - pip install -r test-requirements.txt
+  - git clone https://gitlab.com/coala/mobans ../coala-mobans
+
+test:
+  script:
+  - moban
+  - git diff --exit-code
+  - coala --non-interactive
+  - python -m pytest
