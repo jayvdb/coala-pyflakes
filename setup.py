@@ -4,6 +4,7 @@ import locale
 import os
 import platform
 import sys
+from subprocess import call
 
 import setuptools.command.build_py
 from setuptools import find_packages, setup
@@ -55,6 +56,49 @@ class PyTestCommand(TestCommand):
 
 SETUP_COMMANDS['test'] = PyTestCommand
 
+
+class BuildDocsCommand(setuptools.command.build_py.build_py):
+
+    def initialize_options(self):
+        setup_dir = os.path.join(os.getcwd(), __dir__)
+        docs_dir = os.path.join(setup_dir, 'docs')
+        source_docs_dir = os.path.join(setup_dir, 'docs')
+
+        set_python_path(setup_dir)
+
+        self.apidoc_commands = list()
+
+        self.apidoc_commands.append((
+            'sphinx-apidoc', '-f', '-o', source_docs_dir,
+            os.path.join(setup_dir, 'pyflakes_bears')
+        ))
+
+        self.apidoc_commands.append((
+            'sphinx-apidoc', '-f', '-o', source_docs_dir,
+            os.path.join(setup_dir, 'pyflakes_generic_plugins')
+        ))
+
+        self.make_command = (
+            'make', '-C',
+            docs_dir,
+            'html', 'SPHINXOPTS=-W',
+        )
+
+        # build_lib & optimize is set to these as a
+        # work around for "AttributeError"
+        self.build_lib = ''
+        self.optimize = 2
+
+    def run(self):
+        for command in self.apidoc_commands:
+            err_no = call(command)
+            if err_no:
+                sys.exit(err_no)
+        err_no = call(self.make_command)
+        sys.exit(err_no)
+
+
+SETUP_COMMANDS['docs'] = BuildDocsCommand
 
 __dir__ = os.path.dirname(__file__)
 filename = os.path.join(__dir__, 'requirements.txt')
