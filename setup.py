@@ -70,11 +70,13 @@ class BuildDocsCommand(setuptools.command.build_py.build_py):
 
         self.apidoc_commands.append((
             'sphinx-apidoc', '-f', '-o', source_docs_dir,
+            '--no-toc',
             os.path.join(setup_dir, 'pyflakes_bears')
         ))
 
         self.apidoc_commands.append((
             'sphinx-apidoc', '-f', '-o', source_docs_dir,
+            '--no-toc',
             os.path.join(setup_dir, 'pyflakes_generic_plugins')
         ))
 

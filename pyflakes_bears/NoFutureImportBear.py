@@ -7,9 +7,10 @@ from pyflakes.checker import FutureImportation
 
 class NoFutureImportBear(LocalBear):
     """
-    Uses pyflakes-enhance-AST to remove future imports
+    Uses PyFlakesASTBear to remove future imports
     """
 
+    LANGUAGES = {'Python', 'Python 2', 'Python 3'}
     AUTHORS = {'The coala developers'}
     AUTHORS_EMAILS = {'coala-devel@googlegroups.com'}
     LICENSE = 'AGPL-3.0'
@@ -17,9 +18,36 @@ class NoFutureImportBear(LocalBear):
 
     def remove_future_imports(self, file, lineno, corrected_lines):
         """
-        Removes all ImportFrom nodes from the input line
+        Removes all FutureImportation(pyflakes AST) nodes from
+        the input line.
+
+        :param file:            The file contents as string array
+        :param lineno:          The filename of the file
+        :param corrected_lines: A set containing lineno of all violations
+                                that have been fixed
+        :return:                A tuple containing diff object and
+                                corrected_lines
         """
         def handle_backslash(line, lineno, diff, corrected_lines):
+            """
+            Helper function to handle use of backslash's in import
+            statements.
+
+            An example of such statement is:
+
+            `from __future__ import print_function, \\`
+            `                       generators`
+
+            :param line:            The content of line in form of str
+            :param lineno:          The filename of the file
+            :param diff:            A diff object that remanins same until
+                                    the logical line is completely removed.
+            :param corrected_lines: A set containing lineno of all violations
+                                    that have been fixed
+            :return:                A tuple containing diff object and
+                                    corrected_lines
+            """
+
             corrected_lines.add(lineno)
             semicolon_index = line.find(';')
             if semicolon_index == -1:
@@ -36,6 +64,24 @@ class NoFutureImportBear(LocalBear):
             return diff, corrected_lines
 
         def handle_semicolon(line, lineno, diff, corrected_lines):
+            """
+            Helper function to handle use of semicolon in import
+            statements.
+
+            An example of such statement is:
+
+            `from __future__ import generators; x = 2`
+
+            :param line:            The content of line in form of str
+            :param lineno:          The filename of the file
+            :param diff:            A diff object that remanins same until
+                                    the logical line is completely removed.
+            :param corrected_lines: A set containing lineno of all violations
+                                    that have been fixed
+            :return:                A tuple containing diff object and
+                                    corrected_lines
+            """
+
             corrected_lines.add(lineno)
             if not line.lstrip().startswith('from __future__'):
                 return diff, corrected_lines
@@ -62,9 +108,6 @@ class NoFutureImportBear(LocalBear):
     def run(self, filename, file,
             dependency_results=dict()
             ):
-        """
-        Uses PyFlakesASTBear to get only FutureImportation
-        """
         corrected_lines = set()
         for result in dependency_results.get(PyFlakesASTBear.name, []):
             for node in result.get_nodes(result.module_scope,
