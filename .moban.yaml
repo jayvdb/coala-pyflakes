@@ -11,7 +11,7 @@ release: 0.1
 build_version: 0.1
 package_module: pyflakes_bears
 docs_output_dir: docs
-ci_directory: .circleci
+ci_directory: .ci
 docs_toc: false
 
 dependencies:
@@ -39,11 +39,11 @@ copy:
   - docs/Makefile: docs/Makefile
   - docs/make.bat: docs/make.bat
   - docs/_static/custom.css: docs/custom.css
-  - .circleci/run_with_env.cmd: run_with_env.cmd
+  - .ci/run_with_env.cmd: run_with_env.cmd
 
 targets:
   - setup.py: coala-setup.py.jj2
   - pyflakes_bears/VERSION: VERSION.jj2
   - requirements.txt: requirements.txt.jj2
   - test-requirements.txt: test-requirements.txt.jj2
-  - .circleci/appveyor.yml: ci/appveyor.yml.jj2
+  - .ci/appveyor.yml: ci/appveyor.yml.jj2
