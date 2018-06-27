@@ -12,6 +12,7 @@ build_version: 0.1
 package_module: pyflakes_bears
 docs_output_dir: docs
 ci_directory: .ci
+docs_source_dir: ./
 docs_toc: false
 
 dependencies:
