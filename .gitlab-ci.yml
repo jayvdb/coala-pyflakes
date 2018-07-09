@@ -1,25 +1,39 @@
-image: python:3.6
-
-variables:
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
-
-cache:
-  paths:
-    - .cache/
-    - venv/
-
-before_script:
-  - python -V
-  - pip install virtualenv
-  - virtualenv venv
-  - source venv/bin/activate
-  - pip install -r requirements.txt
-  - pip install -r test-requirements.txt
-  - git clone https://gitlab.com/coala/mobans ../coala-mobans
-
-test:
+coala:
+  image: python:3.6
+  before_script:
+    - pip install coala-bears
   script:
-  - moban
-  - git diff --exit-code
-  - coala --non-interactive
-  - python -m pytest
+    - coala --non-interactive
+
+moban:
+  image: python:3.6
+  before_script:
+    - git clone https://gitlab.com/coala/mobans ../coala-mobans
+    - pip install -r test-requirements.txt
+    - moban
+  script:
+    - git diff --exit-code
+
+pytest:
+  image: python:3.6
+  variables:
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
+  cache:
+    paths:
+      - .cache/
+      - venv/
+  before_script:
+    - pip install virtualenv
+    - virtualenv venv
+    - source venv/bin/activate
+
+    - pip install -r requirements.txt
+    - pip install -r test-requirements.txt
+
+    - pip uninstall -y pyflakes
+    - git clone -b args-handler https://github.com/MacBox7/pyflakes.git ../pyflakes
+    - cd ../pyflakes
+    - python setup.py install
+    - cd $CI_PROJECT_DIR
+  script:
+    - python -m pytest
