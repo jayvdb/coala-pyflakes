@@ -8,6 +8,10 @@ CODE = 'F482'
 
 
 class NoFutureImport(object):
+    """
+    A generic plugin that uses pyflakes AST to detect use of `__future__`
+    import in python code.
+    """
     name = 'no_future'
     version = __version__
 

@@ -4,6 +4,7 @@ import locale
 import os
 import platform
 import sys
+from subprocess import call
 
 import setuptools.command.build_py
 from setuptools import find_packages, setup
@@ -18,6 +19,7 @@ except (ValueError, UnicodeError, locale.Error):
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 VERSION = '0.1'
+DEPENDENCY_LINKS = []
 
 SETUP_COMMANDS = {}
 
@@ -56,14 +58,90 @@ class PyTestCommand(TestCommand):
 SETUP_COMMANDS['test'] = PyTestCommand
 
 
-__dir__ = os.path.dirname(__file__)
-filename = os.path.join(__dir__, 'requirements.txt')
-with open(filename) as requirements:
-    required = requirements.read().splitlines()
+class BuildDocsCommand(setuptools.command.build_py.build_py):
 
-filename = os.path.join(__dir__, 'test-requirements.txt')
-with open(filename) as requirements:
-    test_required = requirements.read().splitlines()
+    def initialize_options(self):
+        setup_dir = os.path.join(os.getcwd(), __dir__)
+        docs_dir = os.path.join(setup_dir, 'docs')
+        source_docs_dir = os.path.join(docs_dir,
+                                       './')
+
+        set_python_path(setup_dir)
+
+        self.apidoc_commands = list()
+
+        self.apidoc_commands.append((
+            'sphinx-apidoc', '-f', '-o', source_docs_dir,
+            '--no-toc',
+            os.path.join(setup_dir, 'pyflakes_bears')
+        ))
+
+        self.apidoc_commands.append((
+            'sphinx-apidoc', '-f', '-o', source_docs_dir,
+            '--no-toc',
+            os.path.join(setup_dir, 'pyflakes_generic_plugins')
+        ))
+
+        self.make_command = (
+            'make', '-C',
+            docs_dir,
+            'html', 'SPHINXOPTS=-W',
+        )
+
+        # build_lib & optimize is set to these as a
+        # work around for "AttributeError"
+        self.build_lib = ''
+        self.optimize = 2
+
+    def run(self):
+        for command in self.apidoc_commands:
+            err_no = call(command)
+            if err_no:
+                sys.exit(err_no)
+        err_no = call(self.make_command)
+        sys.exit(err_no)
+
+
+SETUP_COMMANDS['docs'] = BuildDocsCommand
+
+__dir__ = os.path.dirname(__file__)
+
+
+def read_requirements(filename):
+    """
+    Parse a requirements file.
+
+    Accepts vcs+ links, and places the URL into
+    `DEPENDENCY_LINKS`.
+
+    :return: list of str for each package
+    """
+    data = []
+    filename = os.path.join(__dir__, filename)
+    with open(filename) as requirements:
+        required = requirements.read().splitlines()
+        for line in required:
+            if not line or line.startswith('#'):
+                continue
+
+            if '+' in line[:4]:
+                repo_link, egg_name = line.split('#egg=')
+                if not egg_name:
+                    raise ValueError('Unknown requirement: {0}'
+                                     .format(line))
+
+                DEPENDENCY_LINKS.append(repo_link)
+
+                line = egg_name.replace('-', '==')
+
+            data.append(line)
+
+    return data
+
+
+required = read_requirements('requirements.txt')
+
+test_required = read_requirements('test-requirements.txt')
 
 filename = os.path.join(__dir__, 'README.rst')
 with open(filename) as readme:
@@ -94,6 +172,7 @@ if __name__ == '__main__':
           install_requires=required,
           extras_require=EXTRAS_REQUIRE,
           tests_require=test_required,
+          dependency_links=DEPENDENCY_LINKS,
           package_data={'pyflakes_bears': ['VERSION']},
           license='MIT',
           data_files=data_files,

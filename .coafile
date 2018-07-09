@@ -47,3 +47,7 @@ max_lines_per_file = 1000
 [all.PythonPackageInit]
 bears = PythonPackageInitBear
 ignore = *.py
+
+[rstcheck]
+bears = RSTcheckBear
+files = docs/**/*.rst
