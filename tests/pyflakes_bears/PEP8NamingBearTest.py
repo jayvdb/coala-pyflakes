@@ -1,6 +1,6 @@
 import os
 from queue import Queue
-from pyflakes_bears.PEP8DoctestNamingBear import PEP8DoctestNamingBear
+from pyflakes_bears.PEP8NamingBear import PEP8NamingBear
 from coalib.testing.LocalBearTestHelper import LocalBearTestHelper
 from coalib.settings.Section import Section
 from coalib.settings.Setting import Setting
@@ -9,7 +9,7 @@ from coalib.results.Result import Result
 
 def get_testfile_path(directory, name):
     return os.path.join(os.path.dirname(__file__),
-                        'pep8_doctest_naming_test_files',
+                        'pep8_naming_test_files',
                         directory,
                         name)
 
@@ -21,14 +21,14 @@ def load_testfile(directory, name):
     return contents
 
 
-class PEP8DoctestNamingBearTest(LocalBearTestHelper):
+class PEP8NamingBearTest(LocalBearTestHelper):
 
     def setUp(self):
         self.madDiff = None
-        self.section = Section('PEP8DoctestNamingBear')
-        self.uut = PEP8DoctestNamingBear(self.section, Queue(),
-                                         debugger=None, timeout=None)
-        self.error_codes = PEP8DoctestNamingBear.ErrorCodes
+        self.section = Section('PEP8NamingBear')
+        self.uut = PEP8NamingBear(self.section, Queue(),
+                                  debugger=None, timeout=None)
+        self.error_codes = PEP8NamingBear.ErrorCodes
 
     def test_e01(self):
         self.section.append(Setting('ignore',
@@ -39,7 +39,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E01', 'invalid.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E01.format(name='GOOD',
                                                             asname='bad'),
                                 file='invalid.py',
@@ -53,7 +53,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E02', 'invalid.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E02.format(name='good',
                                                             asname='Bad'),
                                 file='invalid.py',
@@ -67,7 +67,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E03', 'invalid.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E03.format(name='GoodFile',
                                                             asname='bad'),
                                 file='invalid.py',
@@ -81,7 +81,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E04', 'invalid.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E04.format(name='CamelCase',
                                                             asname='CONST'),
                                 file='invalid.py',
@@ -98,7 +98,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E05', 'invalid_class.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E05.format(name='bad'),
                                 file='invalid_class.py',
                                 line=3,
@@ -108,7 +108,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E05', 'invalid_underscore_name.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E05.format(name='_'),
                                 file='invalid_underscore_name.py',
                                 line=3,
@@ -118,7 +118,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E05', 'invalid_nested_class.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E05.format(name='bad'),
                                 file='invalid_nested_class.py',
                                 line=4,
@@ -131,7 +131,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E06', 'invalid_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E06.format(name='NotOk'),
                                 file='invalid_function.py',
                                 line=3,
@@ -141,7 +141,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E06', 'invalid_nested_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E06.format(name='NotOk'),
                                 file='invalid_nested_function.py',
                                 line=4,
@@ -154,12 +154,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E07', 'invalid_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E07,
                                 file='invalid_function.py',
                                 line=1,
                                 end_line=1),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E07,
                                 file='invalid_function.py',
                                 line=6,
@@ -169,7 +169,7 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E07', 'invalid_nested_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E07,
                                 file='invalid_nested_function.py',
                                 line=5,
@@ -182,12 +182,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E08', 'invalid_function_args.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E08.format(name='BAD'),
                                 file='invalid_function_args.py',
                                 line=1,
                                 column=8),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E08.format(name='VERYBAD'),
                                 file='invalid_function_args.py',
                                 line=3,
@@ -197,12 +197,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E08', 'invalid_nested_function_args.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E08.format(name='BAD'),
                                 file='invalid_nested_function_args.py',
                                 line=5,
                                 column=29),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E08.format(name='VERYBAD'),
                                 file='invalid_nested_function_args.py',
                                 line=12,
@@ -218,12 +218,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E09', 'invalid_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E09,
                                 file='invalid_function.py',
                                 line=2,
                                 end_line=2),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E09,
                                 file='invalid_function.py',
                                 line=8,
@@ -233,12 +233,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E09', 'invalid_nested_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E09,
                                 file='invalid_nested_function.py',
                                 line=4,
                                 end_line=4),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E09,
                                 file='invalid_nested_function.py',
                                 line=12,
@@ -254,12 +254,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E10', 'invalid_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E10,
                                 file='invalid_function.py',
                                 line=2,
                                 end_line=2),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E10,
                                 file='invalid_function.py',
                                 line=9,
@@ -269,12 +269,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E10', 'invalid_nested_function.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E10,
                                 file='invalid_nested_function.py',
                                 line=4,
                                 end_line=4),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E10,
                                 file='invalid_nested_function.py',
                                 line=13,
@@ -287,12 +287,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E11', 'invalid.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E11.format(name='mix_Case'),
                                 file='invalid.py',
                                 line=2,
                                 column=5),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E11.format(name='mix_Case'),
                                 file='invalid.py',
                                 line=7,
@@ -305,12 +305,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E12', 'invalid.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E12.format(name='__mC'),
                                 file='invalid.py',
                                 line=1,
                                 column=1),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E12.format(name='__mC'),
                                 file='invalid.py',
                                 line=5,
@@ -323,12 +323,12 @@ class PEP8DoctestNamingBearTest(LocalBearTestHelper):
         self.check_results(
             self.uut,
             load_testfile('E13', 'invalid.py'),
-            [Result.from_values('PEP8DoctestNamingBear',
+            [Result.from_values('PEP8NamingBear',
                                 self.error_codes.E13.format(name='Var1'),
                                 file='invalid.py',
                                 line=2,
                                 column=4),
-             Result.from_values('PEP8DoctestNamingBear',
+             Result.from_values('PEP8NamingBear',
                                 self.error_codes.E13.format(name='Var1'),
                                 file='invalid.py',
                                 line=7,
