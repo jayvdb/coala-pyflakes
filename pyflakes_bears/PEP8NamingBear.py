@@ -11,13 +11,13 @@ from pyflakes.checker import (ClassDefinition, Importation,
                               Argument)
 
 
-class PEP8DoctestNamingBear(LocalBear):
+class PEP8NamingBear(LocalBear):
     """
     Uses pyflakes-enhance-AST to remove future imports
     """
 
     def __init__(self, Printer, LogPrinterMixin, timeout, debugger):
-        super(PEP8DoctestNamingBear, self).__init__(Printer, LogPrinterMixin)
+        super(PEP8NamingBear, self).__init__(Printer, LogPrinterMixin)
         self.ignore = list()
 
     AUTHORS = {'The coala developers'}
