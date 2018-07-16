@@ -15,9 +15,6 @@ class PyFlakesChecker(Checker):
         super().__init__(tree, filename='(none)', builtins=None,
                          withDoctest=False)
 
-    def ARGUMENTS(self, node):
-        pass
-
 
 class PyFlakesResult(HiddenResult):
 
