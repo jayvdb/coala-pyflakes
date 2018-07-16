@@ -10,10 +10,13 @@ from pyflakes.checker import (ModuleScope, ClassScope, FunctionScope,
 
 
 class PyFlakesChecker(Checker):
-    def __init__(self, tree, filename='(none)', builtins=None,
-                 withDoctest=False):
-        super().__init__(tree, filename='(none)', builtins=None,
-                         withDoctest=False)
+
+    def handleNode(self, node, parent):
+        if (isinstance(self.scope, (ClassScope, FunctionScope)) and
+                not hasattr(self.scope, '_node')):
+            self.scope._node = parent
+        parent._scope = self.scope
+        super().handleNode(node, parent)
 
 
 class PyFlakesResult(HiddenResult):
@@ -38,35 +41,15 @@ class PyFlakesResult(HiddenResult):
             if type(node) == node_type:
                 yield node
 
-    def get_node_scope(self, node):
-        result = PyFlakesChecker(node.source, filename='')
-        scope = self.get_scopes(ModuleScope, result.deadScopes)[0]
-        scope.parent = node
-        return scope
-
-    def get_class_definitions(self, module_scope, parent=None):
-        result = list()
-        for _, node in module_scope.items():
+    def get_all_nodes(self, scope, node_type, parent=None):
+        for _, node in scope.items():
             node.parent = parent
-            if type(node) == ClassDefinition:
-                result.append(node)
-            if any([type(node) == ClassDefinition,
-                    type(node) == FunctionDefinition]):
-                result.extend(self.get_class_definitions(
-                    self.get_node_scope(node), node))
-        return result
-
-    def get_function_definitions(self, module_scope, parent=None):
-        result = list()
-        for _, node in module_scope.items():
-            node.parent = parent
-            if type(node) == FunctionDefinition:
-                result.append(node)
-            if any([type(node) == ClassDefinition,
-                    type(node) == FunctionDefinition]):
-                result.extend(self.get_function_definitions(
-                    self.get_node_scope(node), node))
-        return result
+            if type(node) == node_type:
+                yield node
+            if (hasattr(node.source, '_scope') and
+                    isinstance(node, (ClassDefinition, FunctionDefinition))):
+                yield from self.get_all_nodes(node.source._scope,
+                                              node_type, node)
 
 
 class PyFlakesASTBear(LocalBear):
@@ -90,6 +73,6 @@ class PyFlakesASTBear(LocalBear):
 
     def run(self, filename, file):
         tree = ast.parse(''.join(file))
-        result = Checker(tree, filename=filename, withDoctest=True)
+        result = PyFlakesChecker(tree, filename=filename, withDoctest=True)
 
         yield PyFlakesResult(self, result.deadScopes, result.messages)
