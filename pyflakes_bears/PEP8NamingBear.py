@@ -174,7 +174,7 @@ class PEP8NamingBear(LocalBear):
             scopes = result.doctest_scopes
             scopes.append(result.module_scope)
             for scope in scopes:
-                for importation in result.get_nodes(scope, Importation):
+                for importation in result.get_all_nodes(scope, Importation):
                     violation = self.check_importation(importation)
                     if violation.error:
                         yield Result.from_values(
@@ -184,7 +184,8 @@ class PEP8NamingBear(LocalBear):
                             file=filename,
                             line=importation.source.lineno)
 
-                for importation in result.get_nodes(scope, ImportationFrom):
+                for importation in result.get_all_nodes(scope,
+                                                        ImportationFrom):
                     violation = self.check_from_importation(importation)
                     if violation.error:
                         yield Result.from_values(
@@ -194,7 +195,8 @@ class PEP8NamingBear(LocalBear):
                             file=filename,
                             line=importation.source.lineno)
 
-                for class_definition in result.get_class_definitions(scope):
+                for class_definition in result.get_all_nodes(scope,
+                                                             ClassDefinition):
                     if not self.is_valid_class_name(class_definition):
                         yield Result.from_values(
                             origin=self,
@@ -203,8 +205,8 @@ class PEP8NamingBear(LocalBear):
                             file=filename,
                             line=class_definition.source.lineno)
 
-                for function_definition in result.get_function_definitions(
-                                                        scope):
+                for function_definition in result.get_all_nodes(
+                                                  scope, FunctionDefinition):
                     if not self.is_valid_function_name(function_definition):
                         yield Result.from_values(
                             origin=self,
