@@ -31,7 +31,7 @@ pytest:
     - pip install -r test-requirements.txt
 
     - pip uninstall -y pyflakes
-    - git clone -b args-handler https://github.com/MacBox7/pyflakes.git ../pyflakes
+    - git clone https://github.com/PyCQA/pyflakes ../pyflakes
     - cd ../pyflakes
     - python setup.py install
     - cd $CI_PROJECT_DIR
