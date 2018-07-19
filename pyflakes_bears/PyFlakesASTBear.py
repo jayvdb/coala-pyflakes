@@ -6,7 +6,7 @@ from coalib.results.Result import Result
 from pyflakes.checker import Checker
 from pyflakes.checker import ClassDefinition, FunctionDefinition
 from pyflakes.checker import (ModuleScope, ClassScope, FunctionScope,
-                              GeneratorScope, DoctestScope)
+                              GeneratorScope, DoctestScope, Argument)
 
 
 class PyFlakesChecker(Checker):
@@ -17,6 +17,9 @@ class PyFlakesChecker(Checker):
             self.scope._node = parent
         parent._scope = self.scope
         super().handleNode(node, parent)
+
+    def ARG(self, node):
+        self.addBinding(node, Argument(node.arg, node))
 
 
 class PyFlakesResult(HiddenResult):
