@@ -159,6 +159,7 @@ SETUP_COMMANDS.update({
 if __name__ == '__main__':
     setup(name='coala-pyflakes',
           version=VERSION,
+          zip_safe=False,
           description='A collection of bears implemented using pyflakes-enhanced-AST',
           author='Ankit Joshi',
           author_email='ajankit2304@gmail.com',
@@ -177,6 +178,11 @@ if __name__ == '__main__':
           license='MIT',
           data_files=data_files,
           long_description=long_description,
+          entry_points={
+              'coalabears': [
+                  'coala_pyflakes = pyflakes_bears',
+              ],
+          },
           # from http://pypi.python.org/pypi?%3Aaction=list_classifiers
           classifiers=[
               'Development Status :: 4 - Beta',

@@ -53,3 +53,6 @@ ignore = *.py
 [rstcheck]
 bears = RSTcheckBear
 files = docs/**/*.rst
+
+[nofuture]
+bears = NoFutureImportBear
