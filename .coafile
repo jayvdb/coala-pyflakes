@@ -28,6 +28,9 @@ language = Python
 bears = PEP8Bear, PycodestyleBear
 default_actions = PEP8Bear: ApplyPatchAction
 
+[all.security]
+bears = BanditBear
+
 [all.linelength]  # Sometimes autopep8 makes too long lines, need to check after!
 bears = LineLengthBear
 ignore_length_regex = ^.*https?://
