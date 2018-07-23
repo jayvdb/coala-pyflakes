@@ -7,6 +7,9 @@ ignore = tests/pyflakes_bears/pep8_naming_test_files/**/*
 max_line_length = 79
 use_spaces = True
 
+[all.linter]
+bears = PyFlakesBear
+
 [all.python]
 # Patches may conflict with autopep8 so putting them in own section so they
 # will be executed sequentially; also we need the LineLengthBear to double
@@ -17,11 +20,11 @@ language = python
 default_actions = *: ApplyPatchAction
 preferred_quotation = '
 
-[all.flakes]
+[all.unused]
 # Do not set default_action to ApplyPatchAction as it may lead to some
 # required imports being removed which might result in coala behaving weirdly.
 default_action: *: ShowPatchAction
-bears = PyUnusedCodeBear
+bears = PyUnusedCodeBear, PyCommentedCodeBear
 language = Python
 
 [all.autopep8]
