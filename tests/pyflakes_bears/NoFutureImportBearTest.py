@@ -1,9 +1,10 @@
 from queue import Queue
-from pyflakes_bears.NoFutureImportBear import NoFutureImportBear
-from coalib.testing.LocalBearTestHelper import LocalBearTestHelper
-from coalib.settings.Section import Section
-from coalib.results.Result import Result
+
 from coalib.results.Diff import Diff
+from coalib.results.Result import Result
+from coalib.settings.Section import Section
+from coalib.testing.LocalBearTestHelper import LocalBearTestHelper
+from pyflakes_bears.NoFutureImportBear import NoFutureImportBear
 
 
 class NoFutureImportTest(LocalBearTestHelper):

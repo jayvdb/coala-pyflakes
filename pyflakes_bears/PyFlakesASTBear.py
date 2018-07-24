@@ -3,10 +3,15 @@ import ast
 from coalib.bears.LocalBear import LocalBear
 from coalib.results.HiddenResult import HiddenResult
 from coalib.results.Result import Result
+from pyflakes.checker import Argument
 from pyflakes.checker import Checker
-from pyflakes.checker import ClassDefinition, FunctionDefinition
-from pyflakes.checker import (ModuleScope, ClassScope, FunctionScope,
-                              GeneratorScope, DoctestScope, Argument)
+from pyflakes.checker import ClassDefinition
+from pyflakes.checker import ClassScope
+from pyflakes.checker import DoctestScope
+from pyflakes.checker import FunctionDefinition
+from pyflakes.checker import FunctionScope
+from pyflakes.checker import GeneratorScope
+from pyflakes.checker import ModuleScope
 
 
 class PyFlakesChecker(Checker):

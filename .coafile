@@ -10,12 +10,12 @@ use_spaces = True
 [all.linter]
 bears = PyFlakesBear
 
-[all.python]
+[all.style]
 # Patches may conflict with autopep8 so putting them in own section so they
 # will be executed sequentially; also we need the LineLengthBear to double
 # check the line length because PEP8Bear sometimes isn't able to correct the
 # linelength.
-bears = SpaceConsistencyBear, QuotesBear
+bears = PyImportSortBear, SpaceConsistencyBear, QuotesBear
 language = python
 default_actions = *: ApplyPatchAction
 preferred_quotation = '

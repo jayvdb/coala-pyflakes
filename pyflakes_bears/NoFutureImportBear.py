@@ -1,8 +1,8 @@
 from coalib.bears.LocalBear import LocalBear
-from coalib.results.Result import Result
 from coalib.results.Diff import Diff
-from pyflakes_bears.PyFlakesASTBear import PyFlakesASTBear
+from coalib.results.Result import Result
 from pyflakes.checker import FutureImportation
+from pyflakes_bears.PyFlakesASTBear import PyFlakesASTBear
 
 
 class NoFutureImportBear(LocalBear):
