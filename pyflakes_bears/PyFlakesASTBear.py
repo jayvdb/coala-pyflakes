@@ -15,8 +15,20 @@ from pyflakes.checker import ModuleScope
 
 
 class PyFlakesChecker(Checker):
+    """
+    Subclass of Checker class.
+
+    Fixes node information of arguments and creates link
+    between scope and their corresponding nodes.
+    """
 
     def handleNode(self, node, parent):
+        """
+        Link scope with their corresponding nodes.
+
+        :param node:       The ast node being handled.
+        :param parent:     Parent node.
+        """
         if (isinstance(self.scope, (ClassScope, FunctionScope)) and
                 not hasattr(self.scope, '_node')):
             self.scope._node = parent
@@ -24,13 +36,32 @@ class PyFlakesChecker(Checker):
         super().handleNode(node, parent)
 
     def ARG(self, node):
+        """
+        Fix location information of arguments.
+
+        :param node:       The ast node being handled.
+        """
         self.addBinding(node, Argument(node.arg, node))
 
 
 class PyFlakesResult(HiddenResult):
+    """
+    Formats output of the metabear.
+
+    Provides module_scope, class_scopes, function_scopes, generator_scopes,
+    doctest_scopes and pyflakes_messages to the dependent bear. Also
+    provides them with get_scopes, get_nodes and get_all_nodes
+    helper functions.
+    """
 
     def __init__(self, origin, deadScopes, pyflakes_messages):
+        """
+        Initialize the results object.
 
+        :param origin:            The origin of invocation
+        :param deadScopes:        Deadscopes returned by pyflakes
+        :param pyflakes_messages: A list of warnings detected by pyflakes
+        """
         Result.__init__(self, origin, message='')
 
         self.module_scope = self.get_scopes(ModuleScope, deadScopes)[0]
@@ -41,15 +72,35 @@ class PyFlakesResult(HiddenResult):
         self.pyflakes_messages = pyflakes_messages
 
     def get_scopes(self, scope_type, scopes):
+        """
+        Get scopes of a specific type.
+
+        :param scope_type:   The type of scope to be filtered.
+        :param scopes:       The list of scopes.
+        :return:             A list of filtered scopes.
+        """
         return list(filter(lambda scope: type(scope) == scope_type,
                            scopes))
 
     def get_nodes(self, scope, node_type):
+        """
+        Yield nodes of a specific type.
+
+        :param scope:      The scope to be searched in.
+        :param node_type:  The type of node to be filtered.
+        """
         for _, node in scope.items():
             if type(node) == node_type:
                 yield node
 
     def get_all_nodes(self, scope, node_type, parent=None):
+        """
+        Recusively look for nodes inside a scope.
+
+        :param scope:       The type of scope to be filtered.
+        :param node_type:   The list of scopes.
+        :param parent:      The parent of node.
+        """
         for _, node in scope.items():
             node.parent = parent
             if type(node) == node_type:
@@ -62,6 +113,8 @@ class PyFlakesResult(HiddenResult):
 
 class PyFlakesASTBear(LocalBear):
     """
+    A meta bear to wrap pyflakes-enhance-AST.
+
     PyFlakesASTBear is a meta bear that generates pyflakes-enhance-AST
     for the input file and provides the results as a HiddenResult object
     to the bear that depends on it.
@@ -80,6 +133,12 @@ class PyFlakesASTBear(LocalBear):
     LICENSE = 'AGPL-3.0'
 
     def run(self, filename, file):
+        """
+        Yield HiddenResult node containing pyflakes ast.
+
+        :param filename:   The name of the file
+        :param file:       The content of the file
+        """
         tree = ast.parse(''.join(file))
         result = PyFlakesChecker(tree, filename=filename, withDoctest=True)
 
