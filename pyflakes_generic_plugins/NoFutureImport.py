@@ -1,6 +1,6 @@
 from pyflakes.checker import Checker
-from pyflakes.checker import ModuleScope
 from pyflakes.checker import FutureImportation
+from pyflakes.checker import ModuleScope
 
 __version__ = '0.1'
 

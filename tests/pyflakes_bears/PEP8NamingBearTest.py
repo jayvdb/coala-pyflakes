@@ -1,10 +1,11 @@
 import os
 from queue import Queue
-from pyflakes_bears.PEP8NamingBear import PEP8NamingBear
-from coalib.testing.LocalBearTestHelper import LocalBearTestHelper
+
+from coalib.results.Result import Result
 from coalib.settings.Section import Section
 from coalib.settings.Setting import Setting
-from coalib.results.Result import Result
+from coalib.testing.LocalBearTestHelper import LocalBearTestHelper
+from pyflakes_bears.PEP8NamingBear import PEP8NamingBear
 
 
 def get_testfile_path(directory, name):

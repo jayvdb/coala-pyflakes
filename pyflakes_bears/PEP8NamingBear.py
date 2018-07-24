@@ -3,12 +3,14 @@ from collections import namedtuple
 from coalib.bears.LocalBear import LocalBear
 from coalib.results.Result import Result
 from coalib.settings.Setting import typed_list
-
+from pyflakes.checker import Argument
+from pyflakes.checker import Assignment
+from pyflakes.checker import Binding
+from pyflakes.checker import ClassDefinition
+from pyflakes.checker import FunctionDefinition
+from pyflakes.checker import Importation
+from pyflakes.checker import ImportationFrom
 from pyflakes_bears.PyFlakesASTBear import PyFlakesASTBear
-from pyflakes.checker import (ClassDefinition, Importation,
-                              ImportationFrom, Binding,
-                              FunctionDefinition, Assignment,
-                              Argument)
 
 
 class PEP8NamingBear(LocalBear):
