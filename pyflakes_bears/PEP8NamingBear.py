@@ -15,10 +15,19 @@ from pyflakes_bears.PyFlakesASTBear import PyFlakesASTBear
 
 class PEP8NamingBear(LocalBear):
     """
-    Uses pyflakes-enhance-AST to remove future imports
+    LocalBear detecting PEP8 naming violations.
+
+    The pyflakes-enhanced-AST is used to parse nodes and
+    check naming violations
     """
 
     def __init__(self, Printer, LogPrinterMixin, timeout, debugger):
+        """
+        Initialize LocalBear with required parameters.
+
+        Without timeout and debugger being supplied here the
+        coala CI crashes.
+        """
         super(PEP8NamingBear, self).__init__(Printer, LogPrinterMixin)
         self.ignore = list()
 
@@ -28,6 +37,13 @@ class PEP8NamingBear(LocalBear):
     BEAR_DEPS = {PyFlakesASTBear}
 
     class ErrorCodes:
+        """
+        PEP8NamingBear error codes.
+
+        Convenient way to assert and present all warning generated
+        by PEP8NamingBear.
+        """
+
         E01 = 'constant {name} imported as non constant {asname}'
         E02 = 'lowercase {name} imported as non lowercase {asname}'
         E03 = 'camelcase {name} imported as lowercase {asname}'
@@ -43,12 +59,24 @@ class PEP8NamingBear(LocalBear):
         E13 = 'variable {name} in function should be lowercase'
 
     def is_valid_class_name(self, node):
+        """
+        Check if the class name is valid.
+
+        :param node:      Pyflakes node
+        :return:          bool True/False
+        """
         name = node.name
         if name in self.ignore:
             return True
         return name.lstrip('_')[:1].isupper()
 
     def is_valid_function_name(self, node):
+        """
+        Check if the function name is valid.
+
+        :param node:      Pyflakes node
+        :return:          bool True/False
+        """
         ignore_names = ['setUp', 'tearDown', 'setUpClass', 'tearDownClass']
         ignore_names.extend(self.ignore)
         name = node.name
@@ -57,6 +85,13 @@ class PEP8NamingBear(LocalBear):
         return name.islower()
 
     def check_method_arg(self, node, class_method_decorators):
+        """
+        Check if first argument of method is self.
+
+        :param node:                     Pyflakes node
+        :param class_method_decorators:  List of class method decorators
+        :return:                         bool True/False
+        """
         if not type(node.parent) == ClassDefinition:
             return True
         if node.name in self.ignore:
@@ -86,6 +121,13 @@ class PEP8NamingBear(LocalBear):
         return True
 
     def check_class_method_arg(self, node, class_method_decorators):
+        """
+        Check if first argument of class method is cls.
+
+        :param node:                     Pyflakes node
+        :param class_method_decorators:  List of class method decorators
+        :return:                         bool True/False
+        """
         if not type(node.parent) == ClassDefinition:
             return True
         if node.name in self.ignore:
@@ -112,6 +154,14 @@ class PEP8NamingBear(LocalBear):
         return True
 
     def get_import_violation_code(self, name, asname):
+        """
+        Return import violation.
+
+        :param name:      Import name
+        :param asname:    Import alias
+        :return:          Error code corresponding to type
+                          of violations
+        """
         if asname in self.ignore:
             return False
         if name == asname:
@@ -128,6 +178,12 @@ class PEP8NamingBear(LocalBear):
             return self.ErrorCodes.E04
 
     def check_importation(self, node):
+        """
+        Check pyflakes Importation node.
+
+        :param node:      Pyflakes node
+        :return:          Named tuple violation
+        """
         name = node.fullName.split('.')[-1]
         asname = node.name
 
@@ -137,6 +193,12 @@ class PEP8NamingBear(LocalBear):
                          self.get_import_violation_code(name, asname))
 
     def check_from_importation(self, node):
+        """
+        Check pyflakes ImportationFrom node.
+
+        :param node:      Pyflakes node
+        :return:          bool True/False
+        """
         name = node.real_name
         asname = node.name
 
@@ -146,6 +208,12 @@ class PEP8NamingBear(LocalBear):
                          self.get_import_violation_code(name, asname))
 
     def check_double_underscore(self, node):
+        """
+        Check if function name doesn't starts with `__`.
+
+        :param node:      Pyflakes node
+        :return:          bool True/False
+        """
         if type(node.parent) == ClassDefinition:
             return True
 
@@ -160,6 +228,12 @@ class PEP8NamingBear(LocalBear):
         return True
 
     def is_mixed_case(self, name):
+        """
+        Check if name is mixed case.
+
+        :param name:      Name string
+        :return:          bool True/False
+        """
         return name.lower() != name and name.lstrip('_')[:1].islower()
 
     def run(self, filename, file,
@@ -168,8 +242,15 @@ class PEP8NamingBear(LocalBear):
             class_method_decorators: typed_list(str) = ()
             ):
         """
-        Uses PyFlakesASTBear to get important nodes and executes naming
-        checks on them.
+        Yield all naming violations.
+
+        :param filename:                 The name of the file
+        :param file:                     The content of the file
+        :param dependency_results:       Results from the metabear
+        :param ignore:                   List of names to be ignored
+        :param class_method_decorators:  List of decorators that can
+                                         be used to represent
+                                         class methods.
         """
         self.ignore = ignore
         for result in dependency_results.get(PyFlakesASTBear.name, []):
