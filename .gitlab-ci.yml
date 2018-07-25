@@ -9,7 +9,6 @@ cache:
 
 
 .common_deps_script: &common_deps_script |
-  apk add --no-cache git  # for git+ requirements
   $PYTHON -m pip install setuptools==21 pip==9
   pip install -r test-requirements.txt -r requirements.txt
 
@@ -20,19 +19,19 @@ cache:
 
 
 tests:3.4:
-  image: python:3.4-alpine
+  image: python:3.4
   before_script:
     - *common_deps_script
   script: *common_script
 
 tests:3.5:
-  image: python:3.5-alpine
+  image: python:3.5
   before_script:
     - *common_deps_script
   script: *common_script
 
 tests:3.6:
-  image: python:3.6-alpine
+  image: python:3.6
   before_script:
     - *common_deps_script
   script: *common_script

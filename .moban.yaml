@@ -19,6 +19,7 @@ python_versions:
   - 3.4.4
   - 3.5
   - 3.6
+test_with_alpine: false
 
 entry_points:
   coalabears:
