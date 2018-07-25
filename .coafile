@@ -38,9 +38,9 @@ bears = BanditBear
 bears = LineLengthBear
 ignore_length_regex = ^.*https?://
 
-[all.docstring]
+[docstring]
 bears = PyDocStyleBear
-ignore = tests/**/*.py
+files = pyflakes_bears/**/*.py, pyflakes_generic_plugins/**/*.py
 # conflicting docstyles
 pydocstyle_ignore = D104, D100, D203, D212
 
