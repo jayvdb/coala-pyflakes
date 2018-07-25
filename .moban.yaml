@@ -15,6 +15,10 @@ ci_directory: .ci
 docs_source_dir: ./
 docs_toc: false
 zip_safe: false
+python_versions:
+  - 3.4.4
+  - 3.5
+  - 3.6
 
 entry_points:
   coalabears:
@@ -47,6 +51,8 @@ copy:
   - docs/_static/custom.css: docs/custom.css
 
 targets:
+  - .ci/check_moban.sh: ci/check_moban.sh
+  - .gitlab-ci.yml: ci/gitlab-ci.yml.jj2
   - setup.py: coala-setup.py.jj2
   - pyflakes_bears/VERSION: VERSION.jj2
   - requirements.txt: requirements.txt.jj2

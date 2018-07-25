@@ -1,40 +1,54 @@
-coala:
-  image: python:3.6
+variables:
+  PYTHON: python3
+  DEBIAN_FRONTEND: noninteractive
+  XDG_CACHE_HOME: "$CI_PROJECT_DIR/.cache/"
+
+cache:
+  paths:
+    - .cache/pip
+
+
+.common_deps_script: &common_deps_script |
+  apk add --no-cache git  # for git+ requirements
+  $PYTHON -m pip install setuptools==21 pip==9
+  pip install -r test-requirements.txt -r requirements.txt
+
+.common_script: &common_script
+  - $PYTHON -m pytest --cov-fail-under=100
+  - $PYTHON -m codecov
+
+
+
+tests:3.4:
+  image: python:3.4-alpine
   before_script:
-    - pip install coala-bears
-    - python setup.py install
+    - *common_deps_script
+  script: *common_script
+
+tests:3.5:
+  image: python:3.5-alpine
+  before_script:
+    - *common_deps_script
+  script: *common_script
+
+tests:3.6:
+  image: python:3.6-alpine
+  before_script:
+    - *common_deps_script
+  script: *common_script
+
+lint:
+  image: python:3.5
+  before_script:
+    - $PYTHON -m pip install setuptools==21 pip==9
+    - pip install 'git+https://github.com/coala/coala#egg=coala'
+    - pip install 'git+https://github.com/coala/coala-bears#egg=coala-bears'
   script:
-    - coala --non-interactive
+    - coala --ci
 
 moban:
-  image: python:3.6
+  image: python:3.5
   before_script:
-    - git clone https://gitlab.com/coala/mobans ../coala-mobans
-    - pip install -r test-requirements.txt
-    - moban
+    - pip install moban
   script:
-    - git diff --exit-code
-
-pytest:
-  image: python:3.6
-  variables:
-    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
-  cache:
-    paths:
-      - .cache/
-      - venv/
-  before_script:
-    - pip install virtualenv
-    - virtualenv venv
-    - source venv/bin/activate
-
-    - pip install -r requirements.txt
-    - pip install -r test-requirements.txt
-
-    - pip uninstall -y pyflakes
-    - git clone https://github.com/PyCQA/pyflakes ../pyflakes
-    - cd ../pyflakes
-    - python setup.py install
-    - cd $CI_PROJECT_DIR
-  script:
-    - python -m pytest
+    - .ci/check_moban.sh
